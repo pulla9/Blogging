@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- Scans the classpath for annotated components that will be auto-registered as Spring beans -->
+    <context:component-scan base-package="com.blogging.entities"/>
+    <!-- Activates various annotations to be detected in bean classes e.g: @Autowired -->
+    <!--<context:annotation-config/>-->
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/blogging"/>
+        <property name="username" value="root"/>
+        <property name="password" value="admin123"/>
+    </bean>
+
+    <bean id="entityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+          p:packagesToScan="com.blogging.entities"
+          p:dataSource-ref="dataSource"
+          p:persistenceUnitName="testPU">
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="generateDdl" value="true"/>
+                <property name="showSql" value="true"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Transactions -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+    <!-- enable the configuration of transactional behavior based on annotations -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <bean id="userDAO" class="com.blogging.entities.dao.impl.UserDAOImpl"/>
+    <bean id="articleDAO" class="com.blogging.entities.dao.impl.ArticleDAOImpl"/>
+    <bean id="categoryDAO" class="com.blogging.entities.dao.impl.CategoryDAOImpl"/>
+</beans>
+
+        <!--First we tell spring that we want to use classpath scanning for Spring components (Services, DAOs) rather than defining them one by one in spring xml. We have also enabled Spring annotation detection.
+        Adding the datasource, that is currently HSQLDB in-memory database.
+        We set up a JPA EntityManagerFactory that will used by the application to obtain an EntityManager. Spring supports 3 different ways to do this, we have used LocalContainerEntityManagerFactoryBean for full JPA capabilities.
+        We set LocalContainerEntityManagerFactoryBean attributes as:
+
+        packagesToScan attribute that points to our model classes package.
+        datasource defined earlier in spring configuration file.
+        jpaVendorAdapter as Hibernate and setting some hibernate properties.
+        We create Spring PlatformTransactionManager instance as a JpaTransactionManager. This transaction manager is appropriate for applications that use a single JPA EntityManagerFactory for transactional data access.
+        We enable the configuration of transactional behavior based on annotations, and we set the transactionManager we created.-->
