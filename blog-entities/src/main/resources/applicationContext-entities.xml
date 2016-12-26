@@ -17,6 +17,8 @@
     <!-- Activates various annotations to be detected in bean classes e.g: @Autowired -->
     <!--<context:annotation-config/>-->
 
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/blogging"/>
@@ -59,4 +61,9 @@
         datasource defined earlier in spring configuration file.
         jpaVendorAdapter as Hibernate and setting some hibernate properties.
         We create Spring PlatformTransactionManager instance as a JpaTransactionManager. This transaction manager is appropriate for applications that use a single JPA EntityManagerFactory for transactional data access.
-        We enable the configuration of transactional behavior based on annotations, and we set the transactionManager we created.-->
+        We enable the configuration of transactional behavior based on annotations, and we set the transactionManager we created.
+
+        The JpaTransactionManager is responsible for creating EntityManagers opening transactions
+         and binding them to the current thread context. The <tx:annotation-driven />
+         simply tells Spring to put transactional advice on any class or method that
+         has an @Transactional annotation on it-->
