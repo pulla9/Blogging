@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'sudo mvn install'
+        sh 'mvn install'
       }
     }
   }
